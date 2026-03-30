@@ -1,0 +1,49 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Секреты и локальные данные
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+data/
+
+# Тесты и покрытие
+.coverage
+htmlcov/
+coverage.xml
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.temp
+_all_*
+
+# IDE / редактор
+.idea/
+.vscode/*
+!.vscode/settings.json
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Cursor IDE (планы, правила, кэш — не в репозиторий; при необходимости уберите строку и коммитьте .cursor/rules)
+.cursor/
+.cursorignore

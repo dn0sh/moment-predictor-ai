@@ -1,0 +1,2438 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%2300f2ff' d='M20 2L6 24h8l-4 14 20-26h-10z'/%3E%3C/svg%3E" type="image/svg+xml">
+
+    <!-- SEO & Social Meta Tags -->
+    <title>⚡ Moment Predictor — Угадай момент события</title>
+    <meta name="description" content="Смотри спортивные трансляции и угадывай моменты событий в реальном времени. Соревнуйся с другими и стань лучшим аналитиком!">
+    
+    <!-- Open Graph / Twitter: без чужих URL; при деплое добавьте og:url и og:image с абсолютными адресами -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="⚡ Moment Predictor — Угадай момент события">
+    <meta property="og:description" content="Смотри спортивные трансляции и угадывай моменты событий.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="⚡ Moment Predictor — Угадай момент события">
+    <meta name="twitter:description" content="Смотри спортивные трансляции и угадывай моменты событий.">
+
+    <style>
+        /* Хоккей: лёд, борта, неон табло (как отдельная тема по насыщенности с футболом/кибером) */
+        :root {
+            --bg-start: #040a14;
+            --bg-end: #0e1a32;
+            --card-start: #121c34;
+            --card-end: #070d18;
+            --accent-red: #ff3e5e;
+            --accent-red-glow: rgba(255, 62, 94, 0.52);
+            --accent-cyan: #5cefff;
+            --accent-gold: #ffc94a;
+            --text-main: #f0f9ff;
+            --text-secondary: #8ca3bf;
+            --glass-blur: blur(12px);
+            --border-radius: 20px;
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.55);
+            --shadow-glow: 0 0 22px rgba(255, 77, 109, 0.32);
+            --logo-gradient-end: #ff6b7a;
+            --theme-mid: #38bdf8;
+            --theme-glow-soft: rgba(92, 239, 255, 0.42);
+            --theme-chip-bg: rgba(92, 239, 255, 0.11);
+            --theme-chip-shadow: rgba(56, 189, 248, 0.28);
+            --theme-chip-shadow-hover: rgba(92, 239, 255, 0.22);
+            --theme-ui-tint: rgba(56, 189, 248, 0.1);
+            --theme-ui-tint-strong: rgba(92, 239, 255, 0.14);
+            --theme-leaderboard-hint-bg: rgba(56, 189, 248, 0.07);
+            --theme-card-hover-border: rgba(255, 107, 122, 0.48);
+            --theme-toggle-on-bg: rgba(92, 239, 255, 0.32);
+            --theme-toggle-on-border: rgba(56, 189, 248, 0.5);
+            --play-btn-bg: #e11d48;
+            --play-btn-glow: rgba(225, 29, 72, 0.55);
+            --predict-btn-start: #e11d48;
+            --predict-btn-end: #fb7185;
+            --predict-pulse-glow: rgba(225, 29, 72, 0.45);
+        }
+
+        body[data-mp-theme="football"] {
+            --bg-start: #081210;
+            --bg-end: #0f1c18;
+            --card-start: #13261e;
+            --card-end: #0a1511;
+            --accent-cyan: #3ecf8e;
+            --accent-gold: #d9f99d;
+            --text-main: #f0fdf8;
+            --text-secondary: #95b5a8;
+            --logo-gradient-end: #166534;
+            --theme-mid: #10b981;
+            --theme-glow-soft: rgba(62, 207, 142, 0.45);
+            --theme-chip-bg: rgba(62, 207, 142, 0.12);
+            --theme-chip-shadow: rgba(62, 207, 142, 0.22);
+            --theme-chip-shadow-hover: rgba(62, 207, 142, 0.2);
+            --theme-ui-tint: rgba(62, 207, 142, 0.1);
+            --theme-ui-tint-strong: rgba(62, 207, 142, 0.14);
+            --theme-leaderboard-hint-bg: rgba(62, 207, 142, 0.06);
+            --theme-card-hover-border: rgba(16, 185, 129, 0.5);
+            --theme-toggle-on-bg: rgba(16, 185, 129, 0.35);
+            --theme-toggle-on-border: rgba(16, 185, 129, 0.5);
+            --play-btn-bg: #047857;
+            --play-btn-glow: rgba(4, 120, 87, 0.55);
+            --predict-btn-start: #047857;
+            --predict-btn-end: #34d399;
+            --predict-pulse-glow: rgba(16, 185, 129, 0.42);
+            --shadow-glow: 0 0 22px rgba(16, 185, 129, 0.28);
+        }
+
+        body[data-mp-theme="esports"] {
+            --bg-start: #0a0814;
+            --bg-end: #16102a;
+            --card-start: #1f1835;
+            --card-end: #120e20;
+            --accent-cyan: #c4b5fd;
+            --accent-gold: #f0abfc;
+            --text-main: #faf5ff;
+            --text-secondary: #b8a9d4;
+            --logo-gradient-end: #e879f9;
+            --theme-mid: #8b5cf6;
+            --theme-glow-soft: rgba(196, 181, 253, 0.5);
+            --theme-chip-bg: rgba(139, 92, 246, 0.16);
+            --theme-chip-shadow: rgba(139, 92, 246, 0.32);
+            --theme-chip-shadow-hover: rgba(167, 139, 250, 0.28);
+            --theme-ui-tint: rgba(139, 92, 246, 0.12);
+            --theme-ui-tint-strong: rgba(139, 92, 246, 0.18);
+            --theme-leaderboard-hint-bg: rgba(139, 92, 246, 0.08);
+            --theme-card-hover-border: rgba(232, 121, 249, 0.45);
+            --theme-toggle-on-bg: rgba(139, 92, 246, 0.38);
+            --theme-toggle-on-border: rgba(232, 121, 249, 0.55);
+            --play-btn-bg: #7c3aed;
+            --play-btn-glow: rgba(124, 58, 237, 0.55);
+            --predict-btn-start: #6d28d9;
+            --predict-btn-end: #e879f9;
+            --predict-pulse-glow: rgba(124, 58, 237, 0.45);
+            --shadow-glow: 0 0 24px rgba(124, 58, 237, 0.32);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, var(--bg-end), var(--bg-start));
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            transition: background 0.45s ease, color 0.35s ease;
+        }
+
+        /* Layout */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            gap: 24px;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1.5fr 1fr 1fr;
+            }
+        }
+
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(to right, var(--accent-cyan), var(--logo-gradient-end));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px var(--theme-glow-soft));
+            transition: filter 0.35s ease;
+        }
+
+        .user-stats-header {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: var(--glass-blur);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .stat-pill span {
+            color: var(--accent-cyan);
+            font-weight: 800;
+            transition: color 0.35s ease;
+        }
+
+        /* Card Styles */
+        .card {
+            background: linear-gradient(145deg, var(--card-start), var(--card-end));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: var(--glass-blur);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.35s ease, background 0.45s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            border-color: var(--theme-card-hover-border);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: color 0.35s ease;
+        }
+
+        /* Video Section */
+        .video-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 */
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .video-container > #player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Загрузка только внутри окна превью (не на весь экран) */
+        .video-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 12;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(26, 26, 40, 0.97) 0%, rgba(10, 10, 18, 0.98) 100%);
+            border-radius: 13px;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+
+        .video-loading-overlay.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .video-loading-overlay.has-error .video-loader {
+            display: none;
+        }
+
+        .video-loader {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255, 255, 255, 0.12);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 14px;
+            flex-shrink: 0;
+            transition: border-color 0.35s ease;
+        }
+
+        #loading-text {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+            max-width: 100%;
+            word-break: break-all;
+        }
+
+        .video-loading-overlay #error-message {
+            color: var(--accent-red);
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin: 0;
+            max-width: 100%;
+            line-height: 1.35;
+        }
+
+        .video-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .video-select-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .video-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .video-select:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-cyan);
+        }
+
+        .play-btn {
+            background: var(--play-btn-bg);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.35s ease, box-shadow 0.2s, transform 0.2s;
+            box-shadow: 0 0 15px var(--play-btn-glow);
+        }
+
+        .play-btn:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 25px var(--play-btn-glow);
+        }
+
+        .time-display {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            transition: color 0.35s ease;
+        }
+
+        /* Manual Input */
+        .manual-input-container {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .manual-input {
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .manual-input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .manual-btn {
+            background: var(--accent-cyan);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .manual-btn:hover {
+            filter: brightness(1.1);
+            transform: scale(1.05);
+        }
+
+        /* Management Section */
+        .management-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .event-chips {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 54px;
+        }
+
+        .chip:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 4px 12px var(--theme-chip-shadow-hover);
+        }
+
+        .chip.active {
+            background: var(--theme-chip-bg);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 20px var(--theme-chip-shadow);
+            font-weight: bold;
+            transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        .predict-btn-container {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .predict-btn {
+            width: 100%;
+            padding: 28px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: white;
+            background: linear-gradient(135deg, var(--predict-btn-start), var(--predict-btn-end));
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            box-shadow: 0 10px 40px var(--predict-pulse-glow);
+            transition: background 0.4s ease, box-shadow 0.35s ease, filter 0.3s ease, transform 0.3s ease;
+            animation: pulse 2.5s infinite;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px var(--predict-pulse-glow); transform: scale(1); }
+            50% { box-shadow: 0 0 50px var(--predict-pulse-glow); transform: scale(1.02); }
+            100% { box-shadow: 0 0 20px var(--predict-pulse-glow); transform: scale(1); }
+        }
+
+        .predict-btn:hover:not(:disabled) {
+            transform: translateY(-5px) scale(1.03);
+            filter: brightness(1.15);
+        }
+
+        .predict-btn:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        .predict-btn:disabled {
+            background: #2a2a3a;
+            box-shadow: none;
+            cursor: not-allowed;
+            animation: none;
+            opacity: 0.6;
+            color: #666;
+        }
+
+        .cooldown-container {
+            margin-top: 15px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cooldown-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--accent-cyan), var(--theme-mid));
+            width: 0%;
+            transition: width linear, background 0.4s ease;
+        }
+
+        /* Leaderboard Section */
+        .leaderboard-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-item.highlight {
+            border-color: var(--accent-cyan);
+            background: var(--theme-ui-tint);
+            box-shadow: 0 0 15px var(--theme-chip-shadow);
+            transition: border-color 0.35s ease, background 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        .rank-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin-right: 18px;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffae00); color: #000; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+        .rank-2 { background: linear-gradient(135deg, #e0e0e0, #a0a0a0); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #8b4513); color: #000; }
+        .rank-other { background: rgba(255, 255, 255, 0.08); color: var(--text-secondary); }
+
+        .player-name {
+            flex-grow: 1;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .player-points {
+            color: var(--accent-cyan);
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            transition: color 0.35s ease;
+        }
+
+        .leaderboard-footer-hint {
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--theme-leaderboard-hint-bg);
+            border-radius: 15px;
+            border: 1px dashed var(--accent-cyan);
+            font-size: 0.9rem;
+            text-align: center;
+            color: var(--text-secondary);
+            transition: background 0.45s ease, border-color 0.35s ease, color 0.35s ease;
+        }
+
+        /* History Section */
+        .history-list {
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .history-item {
+            font-size: 0.9rem;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .history-item span:first-child {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Settings */
+        .settings-btn {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 62, 94, 0.1);
+            color: var(--accent-red);
+            border-color: var(--accent-red);
+        }
+
+        /* Toasts */
+        /* Выше модалки входа (20000), иначе тосты не видны при открытом диалоге */
+        #toast-container {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 25000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            padding: 18px 28px;
+            border-radius: 15px;
+            background: rgba(22, 27, 51, 0.95);
+            color: white;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            border-left: 6px solid var(--accent-cyan);
+            transition: border-left-color 0.35s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 320px;
+            animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            backdrop-filter: blur(15px);
+            font-weight: 500;
+        }
+
+        .toast.success { border-left-color: #00ff88; }
+        .toast.warning { border-left-color: var(--accent-gold); }
+        .toast.error { border-left-color: var(--accent-red); }
+
+        @keyframes slideIn {
+            from { transform: translateX(130%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { transform: translateY(-30px); opacity: 0; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .header-auth {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .conn-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.12);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .conn-status.online { color: #4ade80; }
+        .conn-status.offline { color: var(--accent-red); }
+
+        .api-loading-dot {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .api-loading-dot.visible { display: inline-block; }
+
+        .auth-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: var(--theme-ui-tint-strong);
+            border-color: var(--accent-cyan);
+        }
+
+        .auth-btn.primary {
+            background: linear-gradient(135deg, var(--theme-ui-tint-strong), var(--theme-chip-bg));
+            border: 1px solid var(--accent-cyan);
+        }
+
+        #header-username {
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-size: 0.9rem;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            z-index: 20000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: linear-gradient(145deg, var(--card-start), var(--card-end));
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            padding: 28px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .modal-box h2 {
+            margin-bottom: 20px;
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-field {
+            margin-bottom: 16px;
+        }
+
+        .modal-field label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-field input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(0,0,0,0.35);
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        .modal-error {
+            color: var(--accent-red);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            min-height: 1.2em;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .modal-switch {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-switch button {
+            background: none;
+            border: none;
+            color: var(--accent-cyan);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .modal-box--help {
+            max-width: 540px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-help-body {
+            overflow-y: auto;
+            padding-right: 6px;
+            margin-top: 8px;
+            font-size: 0.88rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+        }
+
+        .modal-help-body h3 {
+            color: var(--text-main);
+            font-size: 0.95rem;
+            margin: 16px 0 8px 0;
+            font-weight: 700;
+        }
+
+        .modal-help-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .modal-help-body ul {
+            margin: 6px 0 0 1.1rem;
+            padding: 0;
+        }
+
+        .modal-help-body li {
+            margin-bottom: 6px;
+        }
+
+        .stats-tools {
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .demo-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            user-select: none;
+        }
+
+        .demo-toggle input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .demo-toggle-ui {
+            width: 40px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 11px;
+            position: relative;
+            transition: background 0.2s;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .demo-toggle-ui::after {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            top: 1px;
+            left: 2px;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+        }
+
+        .demo-toggle input:checked + .demo-toggle-ui {
+            background: var(--theme-toggle-on-bg);
+            border-color: var(--theme-toggle-on-border);
+        }
+
+        .demo-toggle input:checked + .demo-toggle-ui::after {
+            transform: translateX(18px);
+        }
+
+        .demo-toggle input:focus-visible + .demo-toggle-ui {
+            outline: 2px solid var(--accent-cyan);
+            outline-offset: 2px;
+        }
+
+        #stat-accuracy.stat-accuracy--demo {
+            font-style: italic;
+            opacity: 0.92;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        (function () {
+            try {
+                var c = localStorage.getItem("sm_category");
+                if (c === "football" || c === "esports") document.body.setAttribute("data-mp-theme", c);
+            } catch (e) { /* ignore */ }
+        })();
+    </script>
+
+    <header>
+        <div class="logo-container">
+            <span style="font-size: 2rem;">⚡</span>
+            <div class="logo">Moment Predictor</div>
+        </div>
+        <div class="header-auth">
+            <button type="button" class="auth-btn" id="btn-help" title="Как пользоваться сайтом">📖 Помощь</button>
+            <span id="connection-status" class="conn-status offline" title="Связь с API">● …</span>
+            <span id="api-loading-indicator" class="api-loading-dot" aria-hidden="true"></span>
+            <span id="header-username" style="display:none;"></span>
+            <button type="button" class="auth-btn" id="btn-open-login">Войти</button>
+            <button type="button" class="auth-btn" id="btn-logout" style="display:none;">Выйти</button>
+        </div>
+        <div class="user-stats-header">
+            <div class="stat-pill">
+                🎯 <span id="header-predictions">0</span>
+            </div>
+            <div class="stat-pill">
+                💎 <span id="header-points">0</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Column 1: Video -->
+        <section class="video-section">
+            <div class="card">
+                <div class="card-title">
+                    <span style="font-size: 1.2rem;">📺</span>
+                    Трансляция
+                </div>
+                <div class="video-container">
+                    <div id="player"></div>
+                    <div id="video-loading-overlay" class="video-loading-overlay" aria-busy="true" aria-label="Загрузка видео">
+                        <div class="video-loader" aria-hidden="true"></div>
+                        <p id="loading-text">Подключение к YouTube…</p>
+                        <p id="error-message" style="display: none;">Видео недоступно. Укажите другой ID ниже.</p>
+                    </div>
+                </div>
+                <div class="video-controls">
+                    <button class="play-btn" id="toggle-play">▶</button>
+                    <div class="time-display">
+                        <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
+                    </div>
+                    <div style="flex-grow: 1; text-align: right;">
+                        <select id="video-category" class="video-select">
+                            <option value="hockey">🏒 Хоккей</option>
+                            <option value="football">⚽ Футбол</option>
+                            <option value="esports">🎮 Киберспорт</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="manual-input-container">
+                    <input type="text" id="manual-id" class="manual-input" placeholder="Вставить свой YouTube ID (например: jNQXAC9IVRw)">
+                    <button id="manual-load" class="manual-btn">Загрузить</button>
+                </div>
+
+                <div class="video-select-container" id="video-list">
+                    <!-- Video buttons will be here -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📊 Ваша статистика</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Всего прогнозов</div>
+                        <div id="stat-total" style="font-size: 1.8rem; font-weight: 900; color: var(--accent-cyan);">0</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Точность</div>
+                        <div id="stat-accuracy" style="font-size: 1.8rem; font-weight: 900; color: var(--accent-gold);">0%</div>
+                    </div>
+                </div>
+                <div class="stats-tools">
+                    <label class="demo-toggle" for="toggle-accuracy-emulation" title="Показывает случайный процент вместо «н/д», только в браузере">
+                        <input type="checkbox" id="toggle-accuracy-emulation" autocomplete="off" aria-describedby="accuracy-emu-hint">
+                        <span class="demo-toggle-ui" aria-hidden="true"></span>
+                        <span id="accuracy-emu-hint">Демо-точность <span style="opacity:0.75">(эмуляция)</span></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Column 2: Management -->
+        <section class="management-section">
+            <div class="card">
+                <div class="card-title">🎯 Выберите событие</div>
+                <div class="event-chips" id="event-chips" role="group" aria-label="Тип события"></div>
+            </div>
+
+            <div class="card" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                <div class="predict-btn-container">
+                    <button id="predict-btn" class="predict-btn">⚡ СОБЫТИЕ СЕЙЧАС!</button>
+                    <div class="cooldown-container" id="cooldown-container">
+                        <div class="cooldown-bar" id="cooldown-bar"></div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 20px; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                    Нажмите кнопку в момент события на трансляции.<br>
+                    <span id="predict-points-hint" style="display: inline-block; margin-top: 10px; color: var(--accent-cyan); font-weight: 600;"></span><br>
+                    <span style="font-size: 0.82rem; opacity: 0.9;">Типы событий меняются вместе с категорией (хоккей, футбол, киберспорт).</span>
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📜 История прогнозов</div>
+                <div class="history-list" id="history-list">
+                    <!-- History items -->
+                </div>
+                <button class="settings-btn" id="reset-btn">⚙️ Сбросить прогресс</button>
+            </div>
+        </section>
+
+        <!-- Column 3: Leaderboard -->
+        <section class="leaderboard-section">
+            <div class="card" style="height: 100%;">
+                <div class="card-title">🏆 Лидерборд</div>
+                <ul class="leaderboard-list" id="leaderboard-list">
+                    <!-- Leaderboard items -->
+                </ul>
+                <div class="leaderboard-footer-hint">
+                    Угадывайте моменты в спорте и киберспорте, копите баллы и поднимайтесь в таблице! 🚀
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div id="help-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+        <div class="modal-box modal-box--help">
+            <h2 id="help-modal-title" style="margin:0;">Как работает Moment Predictor</h2>
+            <div class="modal-help-body">
+                <h3>1. Трансляция</h3>
+                <p style="margin:0;">Выберите категорию (хоккей, футбол, киберспорт), затем ролик из списка или вставьте свой YouTube ID. Видео должно разрешать встраивание на сайтах.</p>
+                <h3>2. Прогноз</h3>
+                <p style="margin:0;">Укажите тип события чипами справа. Запустите воспроизведение и в момент, когда на экране происходит выбранное событие, нажмите «СОБЫТИЕ СЕЙЧАС!». Очки зависят от типа события (подсказка под кнопкой).</p>
+                <h3>3. Аккаунт и сервер</h3>
+                <p style="margin:0;">Войдите или зарегистрируйтесь, чтобы прогнозы сохранялись на backend и участвовали в общем лидерборде. Без входа прогнозы копятся локально в браузере.</p>
+                <h3>4. Точность</h3>
+                <p style="margin:0;">Реальная точность появляется, когда администратор подтверждает фактическое время события на сервере. Пока событий нет, в блоке «Точность» может отображаться «н/д».</p>
+                <ul>
+                    <li>Переключатель <strong>«Демо-точность»</strong> под статистикой включает случайный процент только для демонстрации интерфейса — на сервер и рейтинг это не влияет.</li>
+                    <li>Пока бежит <strong>полоска готовности</strong> после «СОБЫТИЕ СЕЙЧАС!», демо-процент не перескакивает на «результат нового прогноза»: он обновится, когда полоска полностью сбежит (как будто завершилась проверка).</li>
+                </ul>
+                <h3>5. Типы событий и очки</h3>
+                <p style="margin:0;">У <strong>каждой</strong> категории свой набор чипов: хоккей — в духе NHL (гол, сейв кипера, удаление/буллит, контратака); футбол — в духе FC (гол, супер-сейв, стандарт, опасная атака); киберспорт — фраг, эйс, объектив, раунд. Список переключается вместе с категорией над плеером.</p>
+                <ul>
+                    <li>За разные <strong>типы</strong> начисляется разное число <strong>очков</strong> за один прогноз — смотрите строку под кнопкой «СОБЫТИЕ СЕЙЧАС!». На сервере действует та же таблица (например, в киберспорте эйс и объектив дороже базового фрага; в хоккее/футболе сейчас базовые типы с одинаковой ставкой, но типы всё равно различаются для учёта и точности).</li>
+                </ul>
+            </div>
+            <div class="modal-actions" style="margin-top: 18px;">
+                <button type="button" class="auth-btn primary" id="btn-close-help">Понятно</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="auth-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <div class="modal-box">
+            <h2 id="auth-modal-title">Вход</h2>
+            <div id="auth-modal-error" class="modal-error"></div>
+            <form id="form-login" autocomplete="on">
+                <div class="modal-field">
+                    <label for="login-username">Имя пользователя</label>
+                    <input type="text" id="login-username" name="username" required minlength="2" maxlength="64">
+                </div>
+                <div class="modal-field">
+                    <label for="login-password">Пароль</label>
+                    <input type="password" id="login-password" name="password" required minlength="4">
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="auth-btn primary">Войти</button>
+                    <button type="button" class="auth-btn" id="btn-close-modal">Отмена</button>
+                </div>
+            </form>
+            <form id="form-register" autocomplete="on" style="display:none;">
+                <div class="modal-field">
+                    <label for="reg-username">Имя пользователя</label>
+                    <input type="text" id="reg-username" name="username" required minlength="2" maxlength="64">
+                </div>
+                <div class="modal-field">
+                    <label for="reg-password">Пароль</label>
+                    <input type="password" id="reg-password" name="password" required minlength="4">
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="auth-btn primary">Создать аккаунт</button>
+                    <button type="button" class="auth-btn" id="btn-close-modal-2">Отмена</button>
+                </div>
+            </form>
+            <div class="modal-switch">
+                <span id="auth-switch-text">Нет аккаунта?</span>
+                <button type="button" id="btn-switch-auth-mode">Регистрация</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Список видео: редактируйте frontend/videos.config.js -->
+    <script src="videos.config.js"></script>
+    <script src="api-config.js"></script>
+    <!-- YouTube вызывает onYouTubeIframeAPIReady сразу после загрузки; колбэк должен существовать ДО iframe_api. -->
+    <script>
+        (function () {
+            window.onYouTubeIframeAPIReady = function () {
+                window.__mp_youtube_iframe_api_ready = true;
+                if (typeof window.__mp_attachYouTubePlayer === "function") {
+                    window.__mp_attachYouTubePlayer();
+                }
+            };
+        })();
+    </script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        // --- Configuration ---
+        const COOLDOWN_MS = 5000;
+        const LOAD_TIMEOUT_MS = 5000;
+
+        const WORKING_VIDEOS = window.MP_VIDEO_CONFIG;
+        const MP_REQUIRED_CATEGORIES = ["hockey", "football", "esports"];
+        if (!WORKING_VIDEOS || MP_REQUIRED_CATEGORIES.some((k) => !WORKING_VIDEOS[k]?.length)) {
+            console.error(
+                "Moment Predictor: загрузите videos.config.js и задайте непустые списки MP_VIDEO_CONFIG.hockey, .football и .esports"
+            );
+        }
+
+        /** Типы прогнозов по категории трансляции (event_type уходит в API) */
+        const EVENT_TYPES_BY_CATEGORY = {
+            /** Стиль подписей — как в сериях NHL / EA SPORTS NHL */
+            hockey: [
+                { type: "goal", label: "🚨 ГОООЛ!" },
+                { type: "save", label: "🥅 Сейв кипера!" },
+                { type: "foul", label: "🟥 Удаление / буллит" },
+                { type: "moment", label: "⚡ Контратака!" },
+            ],
+            /** Стиль подписей — как в EA SPORTS FC / классическом FIFA */
+            football: [
+                { type: "goal", label: "⚽ ГООООЛ!" },
+                { type: "save", label: "🧤 Супер-сейв!" },
+                { type: "foul", label: "🟨 Стандарт / фол" },
+                { type: "moment", label: "🔥 Опасная атака!" },
+            ],
+            esports: [
+                { type: "frag", label: "🎯 Фраг (килл)" },
+                { type: "ace", label: "💀 Эйс / клип-раунд" },
+                { type: "objective", label: "🚩 Объектив (плент, барон, Spike…)" },
+                { type: "round", label: "⏱️ Решающий раунд / заход" },
+            ],
+        };
+
+        /** Очки за прогноз по event_type — синхронизируйте с backend/prediction_scoring.py */
+        const EVENT_TYPE_POINTS = {
+            goal: 100,
+            save: 100,
+            foul: 100,
+            moment: 100,
+            frag: 110,
+            ace: 150,
+            objective: 120,
+            round: 100,
+        };
+
+        function predictionPointsForEvent(eventType) {
+            const t = String(eventType || "");
+            return EVENT_TYPE_POINTS[t] ?? 100;
+        }
+
+        /** ID роликов текущей категории (fallback только внутри категории — не мешаем NHL и FIFA) */
+        function categoryVideoIds(category) {
+            return (WORKING_VIDEOS[category] || []).map((v) => v.id);
+        }
+
+        /** Стартовый ролик: если в localStorage ID от другой категории — берём первый ролик выбранной категории */
+        function pickInitialVideoId() {
+            const cat = localStorage.getItem("sm_category") || "hockey";
+            const saved = localStorage.getItem("sm_lastVideoId");
+            const list = WORKING_VIDEOS[cat] || [];
+            if (saved && list.some((v) => v.id === saved)) return saved;
+            return list[0] ? list[0].id : "";
+        }
+
+        const MOCK_LEADERS = [
+            {rank: 1, name: "CyberAthlete", points: 5450},
+            {rank: 2, name: "GoalMaster", points: 4180},
+            {rank: 3, name: "SniperElite", points: 3980},
+            {rank: 4, name: "Вы", points: 0, highlight: true},
+            {rank: 5, name: "FastRunner", points: 2120},
+            {rank: 6, name: "MomentCatcher", points: 1980},
+            {rank: 7, name: "LuckyShot", points: 1850},
+            {rank: 8, name: "Fanatic88", points: 1720},
+            {rank: 9, name: "SportLover", points: 1640},
+            {rank: 10, name: "Rookie01", points: 1450}
+        ];
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // API Integration
+        // ═══════════════════════════════════════════════════════════════════════
+
+        /** Задаётся в api-config.js (Docker: пустая строка = тот же хост, прокси /api через nginx) */
+        const API_BASE_URL =
+            typeof window !== "undefined" && Object.prototype.hasOwnProperty.call(window, "MP_API_BASE_URL")
+                ? String(window.MP_API_BASE_URL)
+                : "http://127.0.0.1:8000";
+
+        const API_REQUEST_TIMEOUT_MS = 10000;
+
+        let jwtToken = localStorage.getItem("mp_jwt_token");
+        let currentUserId = localStorage.getItem("mp_user_id");
+        let mpUsername = localStorage.getItem("mp_username") || "";
+
+        let backendOnline = false;
+        let localFallbackNotified = false;
+        let apiInFlightCount = 0;
+
+        const EVENT_TYPE_LABELS = {
+            goal: "Гол",
+            save: "Сейв / удар",
+            foul: "Фол / нарушение",
+            moment: "Опасный момент",
+            frag: "Фраг",
+            ace: "Эйс / клип",
+            objective: "Объектив",
+            round: "Решающий раунд",
+        };
+
+        /** Заголовок Authorization для запросов с JWT */
+        function getAuthHeader() {
+            if (!jwtToken) return {};
+            return { Authorization: "Bearer " + jwtToken };
+        }
+
+        function setApiLoading(delta) {
+            apiInFlightCount += delta;
+            if (apiInFlightCount < 0) apiInFlightCount = 0;
+            const el = document.getElementById("api-loading-indicator");
+            if (el) el.classList.toggle("visible", apiInFlightCount > 0);
+        }
+
+        /** Достаёт sub (user id) из JWT без проверки подписи — только для клиента */
+        function decodeJwtSub(token) {
+            if (!token || typeof token !== "string") return null;
+            try {
+                const part = token.split(".")[1];
+                if (!part) return null;
+                const b64 = part.replace(/-/g, "+").replace(/_/g, "/");
+                const json = atob(b64);
+                const payload = JSON.parse(json);
+                return payload.sub != null ? String(payload.sub) : null;
+            } catch {
+                return null;
+            }
+        }
+
+        function persistAuth(token, userIdStr, username) {
+            jwtToken = token;
+            currentUserId = userIdStr != null ? String(userIdStr) : null;
+            if (token) localStorage.setItem("mp_jwt_token", token);
+            else localStorage.removeItem("mp_jwt_token");
+            if (currentUserId) localStorage.setItem("mp_user_id", currentUserId);
+            else localStorage.removeItem("mp_user_id");
+            if (username) {
+                mpUsername = username;
+                localStorage.setItem("mp_username", username);
+            }
+        }
+
+        function clearAuth() {
+            jwtToken = null;
+            currentUserId = null;
+            mpUsername = "";
+            localStorage.removeItem("mp_jwt_token");
+            localStorage.removeItem("mp_user_id");
+            localStorage.removeItem("mp_username");
+            localStorage.removeItem("mp_user_profile");
+        }
+
+        /** Разбор ответа API (тело уже прочитано в text). 401 → логин только для защищённых запросов */
+        function handleApiResponse(res, text, opts) {
+            const clearOn401 = opts && opts.clearOn401;
+            if (res.status === 401) {
+                if (clearOn401) {
+                    clearAuth();
+                    updateAuthChrome();
+                    showLoginModal();
+                    showToast("Сессия истекла — войдите снова", "warning");
+                }
+                throw Object.assign(new Error("UNAUTHORIZED"), { status: 401 });
+            }
+            if (res.status === 403) {
+                showToast("Нет доступа", "error");
+                throw Object.assign(new Error("FORBIDDEN"), { status: 403 });
+            }
+            if (res.status === 409) {
+                let msg = "Имя пользователя уже занято.";
+                try {
+                    const j = text ? JSON.parse(text) : {};
+                    if (typeof j.detail === "string" && j.detail.trim()) msg = j.detail.trim();
+                } catch { /* оставляем msg по умолчанию */ }
+                showToast(msg, "warning");
+                throw Object.assign(new Error(msg), { status: 409 });
+            }
+            if (res.status >= 500) {
+                showToast("Сервер недоступен", "error");
+                throw Object.assign(new Error("SERVER"), { status: res.status });
+            }
+            if (!res.ok) {
+                let detail = res.statusText;
+                try {
+                    const j = text ? JSON.parse(text) : {};
+                    if (j.detail != null) {
+                        detail = typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail);
+                    }
+                } catch { /* ignore */ }
+                throw Object.assign(new Error(detail || "HTTP " + res.status), { status: res.status });
+            }
+        }
+
+        const API = {
+            /**
+             * Универсальный fetch: AbortController, таймаут 10 с, опционально JWT.
+             * @param {string} endpoint путь относительно API_BASE_URL
+             * @param {object} options method, body, auth, timeoutMs
+             */
+            async request(endpoint, options = {}) {
+                const method = options.method || "GET";
+                const body = options.body;
+                const useAuth = !!options.auth;
+                const timeoutMs = options.timeoutMs || API_REQUEST_TIMEOUT_MS;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+                const headers = Object.assign(
+                    { "Content-Type": "application/json" },
+                    options.headers || {},
+                    useAuth ? getAuthHeader() : {}
+                );
+                setApiLoading(1);
+                try {
+                    const res = await fetch(API_BASE_URL + endpoint, {
+                        method,
+                        headers,
+                        body: body != null ? JSON.stringify(body) : undefined,
+                        signal: controller.signal,
+                    });
+                    clearTimeout(timeoutId);
+                    const text = await res.text();
+                    handleApiResponse(res, text, { clearOn401: useAuth });
+                    if (res.status === 204 || text == null || text === "") return null;
+                    try {
+                        return JSON.parse(text);
+                    } catch {
+                        return null;
+                    }
+                } catch (e) {
+                    clearTimeout(timeoutId);
+                    if (e.status != null) throw e;
+                    const quiet = !!options.quietNetworkErrors;
+                    if (e.name === "AbortError") {
+                        if (!quiet) showToast("Превышено время ожидания API", "error");
+                        throw Object.assign(new Error("TIMEOUT"), { status: 0 });
+                    }
+                    if (!quiet) showToast("Проверьте подключение к backend", "error");
+                    throw Object.assign(new Error("NETWORK"), { status: 0 });
+                } finally {
+                    setApiLoading(-1);
+                }
+            },
+
+            async register(username, password) {
+                return await this.request("/api/auth/register", {
+                    method: "POST",
+                    body: { username, password },
+                    auth: false,
+                });
+            },
+
+            async login(username, password) {
+                return await this.request("/api/auth/login", {
+                    method: "POST",
+                    body: { username, password },
+                    auth: false,
+                });
+            },
+
+            logout() {
+                clearAuth();
+                window.location.reload();
+            },
+
+            async submitPrediction(videoId, timestamp, eventType, fetchOptions = {}) {
+                return await this.request("/api/prediction", {
+                    method: "POST",
+                    auth: true,
+                    body: {
+                        video_id: videoId,
+                        video_timestamp: timestamp,
+                        event_type: eventType,
+                    },
+                    ...fetchOptions,
+                });
+            },
+
+            async getLeaderboard() {
+                return await this.request("/api/leaderboard", { method: "GET", auth: false });
+            },
+
+            async getPredictions(userId) {
+                return await this.request("/api/predictions/" + encodeURIComponent(userId), {
+                    method: "GET",
+                    auth: true,
+                });
+            },
+
+            async getStats() {
+                return await this.request("/api/stats", { method: "GET", auth: false });
+            },
+        };
+
+        /** Обновляет плашку онлайн/офлайн в шапке */
+        function updateConnectionStatusUI() {
+            const statusEl = document.getElementById("connection-status");
+            if (!statusEl) return;
+            statusEl.classList.toggle("online", backendOnline);
+            statusEl.classList.toggle("offline", !backendOnline);
+            statusEl.textContent = backendOnline ? "● Онлайн" : "● Офлайн";
+        }
+
+        /** Сеть/API недоступны — переключение в локальный режим без дублирующих toast */
+        function markBackendOffline(message) {
+            backendOnline = false;
+            updateConnectionStatusUI();
+            if (message) showToast(message, "warning");
+        }
+
+        /** GET /health без лишних toast — только индикатор онлайн/офлайн */
+        async function refreshConnectionStatus() {
+            const statusEl = document.getElementById("connection-status");
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
+            try {
+                const res = await fetch(API_BASE_URL + "/health", { method: "GET", signal: controller.signal });
+                clearTimeout(timeoutId);
+                backendOnline = res.ok;
+                updateConnectionStatusUI();
+                if (!backendOnline && !localFallbackNotified) {
+                    localFallbackNotified = true;
+                    showToast("Backend недоступен, работа в локальном режиме", "warning");
+                }
+            } catch {
+                clearTimeout(timeoutId);
+                backendOnline = false;
+                updateConnectionStatusUI();
+                if (!localFallbackNotified) {
+                    localFallbackNotified = true;
+                    showToast("Backend недоступен, работа в локальном режиме", "warning");
+                }
+            }
+        }
+
+        function updateAuthChrome() {
+            const loggedIn = !!jwtToken;
+            const loginBtn = document.getElementById("btn-open-login");
+            const logoutBtn = document.getElementById("btn-logout");
+            const nameEl = document.getElementById("header-username");
+            if (loginBtn) loginBtn.style.display = loggedIn ? "none" : "inline-block";
+            if (logoutBtn) logoutBtn.style.display = loggedIn ? "inline-block" : "none";
+            if (nameEl) {
+                if (loggedIn && mpUsername) {
+                    nameEl.style.display = "inline";
+                    nameEl.textContent = mpUsername;
+                } else {
+                    nameEl.style.display = "none";
+                    nameEl.textContent = "";
+                }
+            }
+        }
+
+        let authModalMode = "login";
+
+        function showLoginModal() {
+            authModalMode = "login";
+            const modal = document.getElementById("auth-modal");
+            const formLogin = document.getElementById("form-login");
+            const formRegister = document.getElementById("form-register");
+            const title = document.getElementById("auth-modal-title");
+            const swText = document.getElementById("auth-switch-text");
+            const swBtn = document.getElementById("btn-switch-auth-mode");
+            if (!modal) return;
+            modal.classList.add("open");
+            if (formLogin) formLogin.style.display = "block";
+            if (formRegister) formRegister.style.display = "none";
+            if (title) title.textContent = "Вход";
+            if (swText) swText.textContent = "Нет аккаунта? ";
+            if (swBtn) swBtn.textContent = "Регистрация";
+            const err = document.getElementById("auth-modal-error");
+            if (err) err.textContent = "";
+        }
+
+        function showRegisterModal() {
+            authModalMode = "register";
+            const modal = document.getElementById("auth-modal");
+            const formLogin = document.getElementById("form-login");
+            const formRegister = document.getElementById("form-register");
+            const title = document.getElementById("auth-modal-title");
+            const swText = document.getElementById("auth-switch-text");
+            const swBtn = document.getElementById("btn-switch-auth-mode");
+            if (!modal) return;
+            modal.classList.add("open");
+            if (formLogin) formLogin.style.display = "none";
+            if (formRegister) formRegister.style.display = "block";
+            if (title) title.textContent = "Регистрация";
+            if (swText) swText.textContent = "Уже есть аккаунт? ";
+            if (swBtn) swBtn.textContent = "Войти";
+            const err = document.getElementById("auth-modal-error");
+            if (err) err.textContent = "";
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById("auth-modal");
+            if (modal) modal.classList.remove("open");
+        }
+
+        function bindAuthUiOnce() {
+            if (window.__mp_auth_bound) return;
+            window.__mp_auth_bound = true;
+
+            document.getElementById("btn-open-login")?.addEventListener("click", () => showLoginModal());
+            document.getElementById("btn-logout")?.addEventListener("click", () => API.logout());
+            document.getElementById("btn-close-modal")?.addEventListener("click", closeAuthModal);
+            document.getElementById("btn-close-modal-2")?.addEventListener("click", closeAuthModal);
+            document.getElementById("btn-switch-auth-mode")?.addEventListener("click", () => {
+                if (authModalMode === "login") showRegisterModal();
+                else showLoginModal();
+            });
+
+            document.getElementById("form-login")?.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const errEl = document.getElementById("auth-modal-error");
+                if (errEl) errEl.textContent = "";
+                const u = document.getElementById("login-username").value.trim();
+                const p = document.getElementById("login-password").value;
+                try {
+                    const data = await API.login(u, p);
+                    const sub = decodeJwtSub(data.access_token);
+                    persistAuth(data.access_token, sub || currentUserId, u);
+                    await syncUserPointsFromLeaderboard();
+                    closeAuthModal();
+                    updateAuthChrome();
+                    await renderHistory();
+                    await renderLeaderboard();
+                    await updateStatsUI();
+                    showToast("Вы успешно вошли", "success");
+                } catch (ex) {
+                    if (ex.status === 401 && errEl) errEl.textContent = "Неверное имя пользователя или пароль";
+                    else if (errEl && ex.message && ex.status !== 401) errEl.textContent = ex.message;
+                }
+            });
+
+            document.getElementById("form-register")?.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const errEl = document.getElementById("auth-modal-error");
+                if (errEl) errEl.textContent = "";
+                const u = document.getElementById("reg-username").value.trim();
+                const p = document.getElementById("reg-password").value;
+                try {
+                    const profile = await API.register(u, p);
+                    const tok = await API.login(u, p);
+                    const sub = decodeJwtSub(tok.access_token) || String(profile.id);
+                    persistAuth(tok.access_token, sub, profile.username || u);
+                    localStorage.setItem("mp_user_profile", JSON.stringify(profile));
+                    await syncUserPointsFromLeaderboard();
+                    closeAuthModal();
+                    updateAuthChrome();
+                    await renderHistory();
+                    await renderLeaderboard();
+                    await updateStatsUI();
+                    showToast("Аккаунт создан, вы вошли", "success");
+                } catch (ex) {
+                    if (!errEl) return;
+                    if (ex.status === 409) {
+                        errEl.textContent = ex.message || "Имя пользователя уже занято.";
+                    } else {
+                        errEl.textContent = ex.message || "Ошибка регистрации";
+                    }
+                }
+            });
+
+            document.getElementById("auth-modal")?.addEventListener("click", (e) => {
+                if (e.target.id === "auth-modal") closeAuthModal();
+            });
+        }
+
+        // --- State ---
+        let player;
+        let isCooldown = false;
+        let selectedType = 'goal';
+        /** Индекс в categoryVideoIds при поочерёдной подстановке после ошибки / таймаута */
+        let fallbackVideoIndex = 0;
+        let currentCategory = localStorage.getItem('sm_category') || 'hockey';
+        let currentVideoId = pickInitialVideoId();
+        /** Защита от двойного старта (колбэк YouTube + повторная проверка YT.Player) */
+        let youtubePlayerBootstrapped = false;
+        let loadTimeout;
+        /** @type {ReturnType<typeof setInterval> | null} */
+        let timeDisplayIntervalId = null;
+
+        let userData = {
+            points: parseInt(localStorage.getItem('sm_userPoints')) || 0,
+            totalPredictions: parseInt(localStorage.getItem('sm_totalPredictions')) || 0,
+            predictionsHistory: JSON.parse(localStorage.getItem('sm_predictionsHistory')) || []
+        };
+
+        if (jwtToken && !currentUserId) {
+            const sub = decodeJwtSub(jwtToken);
+            if (sub) {
+                currentUserId = sub;
+                localStorage.setItem("mp_user_id", sub);
+            }
+        }
+
+        /** Синхронизация очков с сервером по таблице лидеров */
+        async function syncUserPointsFromLeaderboard() {
+            if (!backendOnline || !mpUsername) return;
+            try {
+                const lb = await API.getLeaderboard();
+                const me = lb.find((r) => r.username === mpUsername);
+                if (me) {
+                    userData.points = me.total_points;
+                    userData.totalPredictions = me.total_predictions;
+                    saveData();
+                }
+            } catch { /* ignore */ }
+        }
+
+        // --- DOM Elements ---
+        const predictBtn = document.getElementById('predict-btn');
+        const cooldownContainer = document.getElementById('cooldown-container');
+        const cooldownBar = document.getElementById('cooldown-bar');
+        const eventChipsContainer = document.getElementById("event-chips");
+        const historyList = document.getElementById('history-list');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const headerPoints = document.getElementById('header-points');
+        const headerPredictions = document.getElementById('header-predictions');
+        const statTotal = document.getElementById('stat-total');
+        const statAccuracy = document.getElementById('stat-accuracy');
+        const currentTimeEl = document.getElementById('current-time');
+        const totalTimeEl = document.getElementById('total-time');
+        const togglePlayBtn = document.getElementById('toggle-play');
+        const videoCategorySelect = document.getElementById('video-category');
+        const videoListContainer = document.getElementById('video-list');
+        const resetBtn = document.getElementById('reset-btn');
+        const videoLoadingOverlay = document.getElementById('video-loading-overlay');
+        const loadingText = document.getElementById('loading-text');
+        const errorMessage = document.getElementById('error-message');
+        const manualIdInput = document.getElementById('manual-id');
+        const manualLoadBtn = document.getElementById('manual-load');
+
+        function setVideoLoadingVisible(visible) {
+            if (!videoLoadingOverlay) return;
+            if (visible) {
+                videoLoadingOverlay.classList.remove('is-hidden');
+                videoLoadingOverlay.setAttribute('aria-busy', 'true');
+            } else {
+                videoLoadingOverlay.classList.add('is-hidden');
+                videoLoadingOverlay.setAttribute('aria-busy', 'false');
+            }
+        }
+
+        function renderEventChips() {
+            if (!eventChipsContainer) return;
+            const defs =
+                EVENT_TYPES_BY_CATEGORY[currentCategory] || EVENT_TYPES_BY_CATEGORY.hockey;
+            eventChipsContainer.innerHTML = "";
+            defs.forEach((d, i) => {
+                const div = document.createElement("div");
+                div.className = "chip" + (i === 0 ? " active" : "");
+                div.dataset.type = d.type;
+                div.setAttribute("role", "button");
+                div.setAttribute("tabindex", "0");
+                div.textContent = d.label;
+                eventChipsContainer.appendChild(div);
+            });
+            selectedType = defs[0].type;
+            updatePointsHint();
+        }
+
+        function updatePointsHint() {
+            const hint = document.getElementById("predict-points-hint");
+            if (!hint) return;
+            const pts = predictionPointsForEvent(selectedType);
+            hint.textContent = `За выбранный тип сейчас: +${pts} очков`;
+        }
+
+        // --- YouTube API ---
+        /**
+         * @param {string} videoId
+         * @param {{ resetChain?: boolean }} [opts] resetChain=false при переходе по цепочке fallback внутри одной категории
+         */
+        function tryLoadVideo(videoId, opts = {}) {
+            const resetChain = opts.resetChain !== false;
+            if (resetChain) {
+                const chain = categoryVideoIds(currentCategory);
+                const idx = chain.indexOf(videoId);
+                fallbackVideoIndex = idx >= 0 ? idx : -1;
+            }
+            currentVideoId = videoId;
+            console.log("Attempting to load video:", videoId, "category:", currentCategory);
+            clearTimeout(loadTimeout);
+            errorMessage.style.display = 'none';
+            videoLoadingOverlay.classList.remove('has-error');
+            setVideoLoadingVisible(true);
+            loadingText.textContent = `Загрузка видео (${videoId})…`;
+
+            if (player) {
+                try { player.destroy(); } catch(e) { console.error("Error destroying player:", e); }
+            }
+
+            const origin =
+                typeof window !== "undefined" && window.location && window.location.origin
+                    ? window.location.origin
+                    : undefined;
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    showinfo: 0,
+                    iv_load_policy: 3,
+                    enablejsapi: 1,
+                    ...(origin ? { origin } : {}),
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+
+            // Set timeout for loading
+            loadTimeout = setTimeout(() => {
+                console.warn("Video load timeout reached for:", videoId);
+                handleLoadFailure();
+            }, LOAD_TIMEOUT_MS);
+        }
+
+        function onPlayerReady(event) {
+            const loadedId = player.getVideoData().video_id;
+            console.log("Player Ready for ID:", loadedId);
+            clearTimeout(loadTimeout);
+            setVideoLoadingVisible(false);
+
+            if (timeDisplayIntervalId != null) {
+                clearInterval(timeDisplayIntervalId);
+                timeDisplayIntervalId = null;
+            }
+            updateTimeDisplay();
+            timeDisplayIntervalId = setInterval(updateTimeDisplay, 1000);
+
+            currentVideoId = player.getVideoData().video_id;
+            localStorage.setItem('sm_lastVideoId', currentVideoId);
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                togglePlayBtn.textContent = '⏸';
+            } else {
+                togglePlayBtn.textContent = '▶';
+            }
+        }
+
+        function onPlayerError(event) {
+            const code = event.data;
+            console.error("YouTube Player Error:", code);
+            clearTimeout(loadTimeout);
+            // 101 / 150 — владелец запретил встраивание; 100 — нет видео
+            if (code === 101 || code === 150) {
+                showToast(
+                    "Это видео нельзя встроить на сайт (ограничение YouTube). Пробуем следующий ролик…",
+                    "warning"
+                );
+            } else if (code === 100) {
+                showToast("Видео недоступно или удалено. Пробуем следующий ролик…", "warning");
+            }
+            handleLoadFailure();
+        }
+
+        function handleLoadFailure() {
+            console.log("Handling load failure... category:", currentCategory);
+            const chain = categoryVideoIds(currentCategory);
+            fallbackVideoIndex++;
+            if (fallbackVideoIndex < chain.length) {
+                const nextId = chain[fallbackVideoIndex];
+                console.log("Trying next fallback in category:", nextId);
+                loadingText.textContent = "Пробуем другое видео...";
+                tryLoadVideo(nextId, { resetChain: false });
+            } else {
+                console.error("All fallback videos failed for category:", currentCategory);
+                videoLoadingOverlay.classList.add('has-error');
+                loadingText.textContent = "";
+                errorMessage.style.display = 'block';
+                setVideoLoadingVisible(true);
+                showToast("❌ Не удалось загрузить видео. Введите ID вручную.", "error");
+            }
+        }
+
+        window.__mp_attachYouTubePlayer = function () {
+            if (youtubePlayerBootstrapped) return;
+            youtubePlayerBootstrapped = true;
+            console.log("YouTube IFrame API готова — запуск плеера");
+            let vid = String(currentVideoId || "").trim();
+            if (!vid) {
+                const again = pickInitialVideoId();
+                if (again) {
+                    currentVideoId = again;
+                    vid = again;
+                }
+            }
+            if (!vid) {
+                const chain = categoryVideoIds(currentCategory);
+                if (chain.length) {
+                    vid = chain[0];
+                    currentVideoId = vid;
+                }
+            }
+            if (!vid) {
+                console.error("Moment Predictor: нет videoId в конфиге");
+                if (loadingText) loadingText.textContent = "Нет роликов: задайте videos.config.js";
+                videoLoadingOverlay?.classList.add("has-error");
+                if (errorMessage) {
+                    errorMessage.style.display = "block";
+                    errorMessage.textContent = "Добавьте хотя бы один ролик в MP_VIDEO_CONFIG.";
+                }
+                setVideoLoadingVisible(true);
+                return;
+            }
+            tryLoadVideo(vid);
+        };
+
+        if (window.__mp_youtube_iframe_api_ready) {
+            window.__mp_attachYouTubePlayer();
+        }
+        if (typeof YT !== "undefined" && YT && typeof YT.Player === "function") {
+            window.__mp_attachYouTubePlayer();
+        }
+
+        function applyMpTheme(category) {
+            if (category === "football" || category === "esports") {
+                document.body.setAttribute("data-mp-theme", category);
+            } else {
+                document.body.removeAttribute("data-mp-theme");
+            }
+        }
+
+        // --- Initialization ---
+        async function initApp() {
+            if (window.__mp_app_inited) return;
+            window.__mp_app_inited = true;
+
+            await refreshConnectionStatus();
+            updateAuthChrome();
+            await syncUserPointsFromLeaderboard();
+
+            videoCategorySelect.value = currentCategory;
+            applyMpTheme(currentCategory);
+            renderVideoList();
+            renderEventChips();
+            await renderLeaderboard();
+            await renderHistory();
+            await updateStatsUI();
+
+            // Event Listeners
+            eventChipsContainer?.addEventListener("click", (e) => {
+                const chip = e.target.closest(".chip");
+                if (!chip || !eventChipsContainer.contains(chip)) return;
+                eventChipsContainer.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
+                chip.classList.add("active");
+                selectedType = chip.dataset.type;
+                updatePointsHint();
+            });
+            eventChipsContainer?.addEventListener("keydown", (e) => {
+                if (e.key !== "Enter" && e.key !== " ") return;
+                const chip = e.target.closest(".chip");
+                if (!chip || !eventChipsContainer.contains(chip)) return;
+                e.preventDefault();
+                chip.click();
+            });
+
+            predictBtn.addEventListener('click', handlePrediction);
+            
+            togglePlayBtn.addEventListener('click', () => {
+                if (!player || typeof player.getPlayerState !== 'function') {
+                    showToast('Плеер ещё загружается — подождите несколько секунд.', 'warning');
+                    return;
+                }
+                const state = player.getPlayerState();
+                if (state == YT.PlayerState.PLAYING) {
+                    player.pauseVideo();
+                } else {
+                    player.playVideo();
+                }
+            });
+
+            videoCategorySelect.addEventListener('change', (e) => {
+                currentCategory = e.target.value;
+                localStorage.setItem('sm_category', currentCategory);
+                applyMpTheme(currentCategory);
+                renderVideoList();
+                renderEventChips();
+                const list = WORKING_VIDEOS[currentCategory];
+                if (!list || !list.length) return;
+                const firstVideo = list[0].id;
+                tryLoadVideo(firstVideo, { resetChain: true });
+                localStorage.setItem("sm_lastVideoId", firstVideo);
+                renderLeaderboard().catch((err) => console.error(err));
+            });
+
+            manualLoadBtn.addEventListener('click', () => {
+                const id = manualIdInput.value.trim();
+                if (id) {
+                    tryLoadVideo(id, { resetChain: true });
+                } else {
+                    showToast("⚠️ Введите корректный YouTube ID", "warning");
+                }
+            });
+
+            resetBtn.addEventListener('click', () => {
+                if (confirm("Вы уверены, что хотите сбросить весь прогресс?")) {
+                    localStorage.removeItem("sm_userPoints");
+                    localStorage.removeItem("sm_totalPredictions");
+                    localStorage.removeItem("sm_predictionsHistory");
+                    localStorage.removeItem("sm_category");
+                    localStorage.removeItem("sm_lastVideoId");
+                    clearAuth();
+                    window.location.reload();
+                }
+            });
+        }
+
+        function renderVideoList() {
+            videoListContainer.innerHTML = '';
+            const list = WORKING_VIDEOS[currentCategory] || [];
+            list.forEach((vid) => {
+                const btn = document.createElement('button');
+                btn.className = 'video-select';
+                btn.textContent = vid.title;
+                btn.onclick = () => {
+                    tryLoadVideo(vid.id, { resetChain: true });
+                    localStorage.setItem("sm_lastVideoId", vid.id);
+                };
+                videoListContainer.appendChild(btn);
+            });
+        }
+
+        // --- Core Logic ---
+        async function handlePrediction() {
+            if (isCooldown) return;
+
+            if (!player || typeof player.getPlayerState !== 'function') {
+                showToast('Видеоплеер ещё загружается — дождитесь появления трансляции.', 'warning');
+                return;
+            }
+
+            const playerState = player.getPlayerState();
+            if (playerState !== YT.PlayerState.PLAYING) {
+                showToast("⚠️ Запустите видео сначала", "warning");
+                return;
+            }
+
+            const videoTime = player.getCurrentTime();
+            const realTimestamp = Date.now();
+            const formattedTime = formatTime(videoTime);
+            const activeChip = eventChipsContainer?.querySelector(".chip.active");
+            const typeLabel =
+                activeChip && activeChip.textContent ? activeChip.textContent.trim() : selectedType;
+            const pts = predictionPointsForEvent(selectedType);
+
+            const newPrediction = {
+                id: realTimestamp,
+                type: selectedType,
+                label: typeLabel,
+                videoTime: formattedTime,
+                points: pts,
+                timestamp: realTimestamp,
+            };
+
+            const tryApi = backendOnline && jwtToken;
+
+            if (tryApi) {
+                try {
+                    await API.submitPrediction(currentVideoId, videoTime, selectedType, {
+                        quietNetworkErrors: true,
+                    });
+                    userData.predictionsHistory.push(newPrediction);
+                    userData.points += pts;
+                    userData.totalPredictions += 1;
+                    saveData();
+                    await renderHistory();
+                    await renderLeaderboard();
+                    startCooldown();
+                    await updateStatsUI();
+                    showToast(`✅ Прогноз сохранён на сервере! +${pts} очков`, "success");
+                    return;
+                } catch (e) {
+                    if (e.status === 401) return;
+                    if (e.status === 0) {
+                        markBackendOffline(
+                            "Сервер недоступен — сохранено локально. Проверьте backend."
+                        );
+                    } else {
+                        showToast("Не удалось сохранить на сервере, локальный режим", "warning");
+                    }
+                }
+            } else if (backendOnline && !jwtToken) {
+                showToast("Войдите, чтобы сохранять прогнозы на сервере (локальная копия сохранена)", "warning");
+                showLoginModal();
+            }
+
+            userData.predictionsHistory.push(newPrediction);
+            userData.points += pts;
+            userData.totalPredictions += 1;
+            saveData();
+            await renderHistory();
+            await renderLeaderboard();
+            startCooldown();
+            await updateStatsUI();
+            showToast(`✅ Прогноз принят! +${pts} очков`, "success");
+        }
+
+        function startCooldown() {
+            isCooldown = true;
+            predictBtn.disabled = true;
+            cooldownContainer.style.display = 'block';
+            
+            cooldownBar.style.width = '100%';
+            cooldownBar.style.transition = 'none';
+            
+            // Force reflow
+            cooldownBar.offsetHeight;
+            
+            cooldownBar.style.transition = `width ${COOLDOWN_MS}ms linear`;
+            cooldownBar.style.width = '0%';
+
+            setTimeout(() => {
+                isCooldown = false;
+                predictBtn.disabled = false;
+                cooldownContainer.style.display = 'none';
+                updateStatsUI().catch(() => {});
+            }, COOLDOWN_MS);
+        }
+
+        // --- UI Rendering ---
+        function renderLeaderboardRow(rank, name, points, highlight) {
+            const li = document.createElement("li");
+            li.className = "leaderboard-item" + (highlight ? " highlight" : "");
+            let rankClass = "rank-other";
+            let medal = "";
+            if (rank === 1) { rankClass = "rank-1"; medal = "🥇 "; }
+            if (rank === 2) { rankClass = "rank-2"; medal = "🥈 "; }
+            if (rank === 3) { rankClass = "rank-3"; medal = "🥉 "; }
+            li.innerHTML = `
+                <div class="rank-badge ${rankClass}">${rank}</div>
+                <div class="player-name">${medal}${name}</div>
+                <div class="player-points">${points}</div>
+            `;
+            leaderboardList.appendChild(li);
+        }
+
+        /** Лидерборд: с API при онлайн-бэкенде, иначе mock + localStorage */
+        async function renderLeaderboard() {
+            leaderboardList.innerHTML = "";
+            if (backendOnline) {
+                try {
+                    const rows = await API.getLeaderboard();
+                    rows.forEach((r) => {
+                        const highlight = mpUsername && r.username === mpUsername;
+                        renderLeaderboardRow(r.rank, r.username, r.total_points, highlight);
+                    });
+                    return;
+                } catch {
+                    /* fallback ниже */
+                }
+            }
+
+            const displayLeaders = MOCK_LEADERS.map((l) => {
+                if (l.highlight) return { ...l, points: userData.points };
+                return l;
+            }).sort((a, b) => b.points - a.points);
+
+            displayLeaders.forEach((p, index) => {
+                const rank = index + 1;
+                renderLeaderboardRow(rank, p.name, p.points, !!p.highlight);
+            });
+        }
+
+        /** История: с API при JWT, иначе localStorage */
+        async function renderHistory() {
+            historyList.innerHTML = "";
+            if (backendOnline && jwtToken && currentUserId) {
+                try {
+                    const list = await API.getPredictions(currentUserId);
+                    if (!list.length) {
+                        historyList.innerHTML =
+                            '<div style="text-align:center; padding:20px; color:var(--text-secondary); font-size:0.85rem;">История пуста. Сделайте свой первый прогноз!</div>';
+                        return;
+                    }
+                    list.forEach((p) => {
+                        const div = document.createElement("div");
+                        div.className = "history-item";
+                        const label = EVENT_TYPE_LABELS[p.event_type] || p.event_type;
+                        const t = formatTime(p.video_timestamp);
+                        const acc =
+                            p.accuracy_score != null
+                                ? ` · точн. ${Math.round(p.accuracy_score * 100)}%`
+                                : "";
+                        const pe =
+                            p.points_earned != null
+                                ? p.points_earned
+                                : predictionPointsForEvent(p.event_type);
+                        div.innerHTML = `<span>${label}</span><span>${t} (+${pe})${acc}</span>`;
+                        historyList.appendChild(div);
+                    });
+                    return;
+                } catch (e) {
+                    if (e.status === 401) return;
+                }
+            }
+
+            if (userData.predictionsHistory.length === 0) {
+                historyList.innerHTML =
+                    '<div style="text-align:center; padding:20px; color:var(--text-secondary); font-size:0.85rem;">История пуста. Сделайте свой первый прогноз!</div>';
+                return;
+            }
+
+            userData.predictionsHistory
+                .slice()
+                .reverse()
+                .forEach((p) => {
+                    const div = document.createElement("div");
+                    div.className = "history-item";
+                    div.innerHTML = `
+                    <span>${p.label}</span>
+                    <span>${p.videoTime} (+${p.points})</span>
+                `;
+                    historyList.appendChild(div);
+                });
+        }
+
+        const LS_ACCURACY_EMU = "mp_accuracy_emulation";
+        const LS_EMU_ROLL = "mp_emulated_accuracy_roll";
+
+        function isAccuracyEmulationEnabled() {
+            const el = document.getElementById("toggle-accuracy-emulation");
+            return !!(el && el.checked);
+        }
+
+        /** Случайный процент, закреплённый за текущим числом прогнозов (меняется при новом прогнозе). */
+        function getOrRollEmulatedAccuracy(predictionCount) {
+            if (predictionCount <= 0) return null;
+            let o = null;
+            try {
+                o = JSON.parse(localStorage.getItem(LS_EMU_ROLL) || "null");
+            } catch {
+                o = null;
+            }
+            if (
+                o &&
+                o.n === predictionCount &&
+                typeof o.pct === "number" &&
+                o.pct >= 0 &&
+                o.pct <= 100
+            ) {
+                return o.pct;
+            }
+            const pct = Math.floor(22 + Math.random() * 75);
+            localStorage.setItem(LS_EMU_ROLL, JSON.stringify({ n: predictionCount, pct }));
+            return pct;
+        }
+
+        function applyAccuracyDisplay(text, title, isDemo) {
+            statAccuracy.textContent = text;
+            if (title) statAccuracy.setAttribute("title", title);
+            else statAccuracy.removeAttribute("title");
+            statAccuracy.classList.toggle("stat-accuracy--demo", !!isDemo);
+        }
+
+        function tryShowEmulatedAccuracy(predictionCount) {
+            if (!isAccuracyEmulationEnabled() || predictionCount <= 0) return false;
+            /** Пока идёт полоска готовности после прогноза — не «переезжаем» на новый N, имитация проверки */
+            const effective =
+                isCooldown && predictionCount > 0 ? predictionCount - 1 : predictionCount;
+            if (effective <= 0) {
+                applyAccuracyDisplay(
+                    "…",
+                    "Демо: процент появится после окончания полоски готовности под кнопкой прогноза.",
+                    true
+                );
+                return true;
+            }
+            const pct = getOrRollEmulatedAccuracy(effective);
+            if (pct == null) return false;
+            applyAccuracyDisplay(
+                pct + "%",
+                "Демо: случайное значение только в интерфейсе. Реальная точность — после подтверждения события на сервере.",
+                true
+            );
+            return true;
+        }
+
+        /** Шапка и блок «Ваша статистика»; точность с API или локально, опционально демо-эмуляция */
+        async function updateStatsUI() {
+            headerPoints.textContent = userData.points;
+            headerPredictions.textContent = userData.totalPredictions;
+            statTotal.textContent = userData.totalPredictions;
+
+            if (backendOnline && jwtToken && currentUserId) {
+                try {
+                    const list = await API.getPredictions(currentUserId);
+                    const scored = list.filter((x) => x.accuracy_score != null);
+                    if (!list.length) {
+                        applyAccuracyDisplay("—", null, false);
+                    } else if (!scored.length) {
+                        if (!tryShowEmulatedAccuracy(list.length)) {
+                            applyAccuracyDisplay(
+                                "н/д",
+                                "Точность появится после подтверждения события (POST /api/event с X-Admin-Key).",
+                                false
+                            );
+                        }
+                    } else {
+                        const accPct = Math.round(
+                            (scored.reduce((s, x) => s + x.accuracy_score, 0) / scored.length) * 100
+                        );
+                        applyAccuracyDisplay(accPct + "%", null, false);
+                    }
+                    statTotal.textContent = list.length;
+                    headerPredictions.textContent = list.length;
+                    await syncUserPointsFromLeaderboard();
+                    headerPoints.textContent = userData.points;
+                    headerPredictions.textContent = userData.totalPredictions;
+                    statTotal.textContent = userData.totalPredictions;
+                    return;
+                } catch (e) {
+                    if (e.status === 401) { /* ниже локальный fallback */ }
+                }
+            }
+
+            if (userData.totalPredictions === 0) {
+                applyAccuracyDisplay("—", null, false);
+            } else if (!tryShowEmulatedAccuracy(userData.totalPredictions)) {
+                applyAccuracyDisplay(
+                    "н/д",
+                    "Локальный режим: для расчёта точности нужен сервер и подтверждённые события.",
+                    false
+                );
+            }
+        }
+
+        function syncAccuracyEmulationToggleFromStorage() {
+            const el = document.getElementById("toggle-accuracy-emulation");
+            if (el) el.checked = localStorage.getItem(LS_ACCURACY_EMU) === "1";
+        }
+
+        function bindHelpAndEmulationUiOnce() {
+            if (window.__mp_help_emu_bound) return;
+            window.__mp_help_emu_bound = true;
+
+            syncAccuracyEmulationToggleFromStorage();
+
+            const helpModal = document.getElementById("help-modal");
+            const openHelp = () => helpModal?.classList.add("open");
+            const closeHelp = () => helpModal?.classList.remove("open");
+
+            document.getElementById("btn-help")?.addEventListener("click", openHelp);
+            document.getElementById("btn-close-help")?.addEventListener("click", closeHelp);
+            helpModal?.addEventListener("click", (e) => {
+                if (e.target.id === "help-modal") closeHelp();
+            });
+
+            document.getElementById("toggle-accuracy-emulation")?.addEventListener("change", (e) => {
+                localStorage.setItem(LS_ACCURACY_EMU, e.target.checked ? "1" : "0");
+                if (e.target.checked) localStorage.removeItem(LS_EMU_ROLL);
+                updateStatsUI().catch(() => {});
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key !== "Escape") return;
+                helpModal?.classList.remove("open");
+            });
+        }
+
+        function updateTimeDisplay() {
+            if (player && player.getCurrentTime) {
+                try {
+                    const current = player.getCurrentTime();
+                    const total = player.getDuration();
+                    currentTimeEl.textContent = formatTime(current);
+                    totalTimeEl.textContent = formatTime(total);
+                } catch(e) {}
+            }
+        }
+
+        // --- Utilities ---
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function saveData() {
+            localStorage.setItem('sm_userPoints', userData.points);
+            localStorage.setItem('sm_totalPredictions', userData.totalPredictions);
+            localStorage.setItem('sm_predictionsHistory', JSON.stringify(userData.predictionsHistory));
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const iconMap = { success: "✅", warning: "⚠️", error: "❌" };
+            const icon = iconMap[type] || "✅";
+            let text = String(message).trim();
+            // Один значок в тосте: убираем дубликат в начале текста
+            const dup = new RegExp(
+                "^" + icon.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*"
+            );
+            text = text.replace(dup, "").trim();
+
+            toast.innerHTML = `<span>${icon}</span> ${text}`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+
+        bindAuthUiOnce();
+        bindHelpAndEmulationUiOnce();
+        initApp().catch((err) => console.error('initApp', err));
+    </script>
+</body>
+</html>
